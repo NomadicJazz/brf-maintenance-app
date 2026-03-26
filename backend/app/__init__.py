@@ -1,5 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
+from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.exceptions import HTTPException
+
 from app.extensions import db, migrate, jwt
 
 def create_app(config_filename=None):
@@ -21,5 +24,27 @@ def create_app(config_filename=None):
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(issues_bp, url_prefix="/api/issues")
+
+    @jwt.unauthorized_loader
+    def handle_missing_jwt(reason):
+        return {"error": reason}, 401
+
+    @jwt.invalid_token_loader
+    def handle_invalid_jwt(reason):
+        return {"error": reason}, 401
+
+    @app.errorhandler(HTTPException)
+    def handle_http_exception(error):
+        return {"error": error.description}, error.code
+
+    @app.errorhandler(SQLAlchemyError)
+    def handle_db_exception(_error):
+        db.session.rollback()
+        return {"error": "Database operation failed"}, 500
+
+    @app.errorhandler(Exception)
+    def handle_unexpected_exception(_error):
+        db.session.rollback()
+        return {"error": "Unexpected server error"}, 500
 
     return app
