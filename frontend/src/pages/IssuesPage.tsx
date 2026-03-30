@@ -5,11 +5,13 @@ import { useAuth } from '../auth/AuthContext'
 import { createIssueApi, getAdminIssuesApi, getMyIssuesApi } from '../api/issuesApi'
 import type { CreateIssueRequest, IssuePayload, IssuePriority } from '../api/issuesApi'
 import TopBar from '../components/TopBar'
+import { useToast } from '../ui/ToastContext'
 
 const PRIORITIES: IssuePriority[] = ['low', 'medium', 'high']
 
 export default function IssuesPage() {
   const { user, isAdmin } = useAuth()
+  const { pushToast } = useToast()
 
   const [page, setPage] = useState(1)
   const [limit] = useState(20)
@@ -23,6 +25,7 @@ export default function IssuesPage() {
     photo_url: '',
   })
   const [createError, setCreateError] = useState<string | null>(null)
+  const [isCreating, setIsCreating] = useState(false)
 
   const query = useQuery({
     queryKey: ['issues', user?.role ?? 'unknown', page, limit, isAdmin ? status : ''],
@@ -47,6 +50,7 @@ export default function IssuesPage() {
   async function onCreate(e: FormEvent) {
     e.preventDefault()
     if (!user) return
+    if (isCreating) return
     setCreateError(null)
 
     const req: CreateIssueRequest = {
@@ -61,6 +65,7 @@ export default function IssuesPage() {
       setCreateError('Title is required')
       return
     }
+    setIsCreating(true)
 
     try {
       await createIssueApi(req)
@@ -73,8 +78,13 @@ export default function IssuesPage() {
       })
       setPage(1)
       await query.refetch()
+      pushToast('Issue created.', 'success')
     } catch (err) {
-      setCreateError(err instanceof Error ? err.message : 'Could not create issue')
+      const message = err instanceof Error ? err.message : 'Could not create issue'
+      setCreateError(message)
+      pushToast(message, 'error')
+    } finally {
+      setIsCreating(false)
     }
   }
 
@@ -118,6 +128,10 @@ export default function IssuesPage() {
             </div>
 
             <form onSubmit={onCreate}>
+              <fieldset
+                disabled={isCreating}
+                style={{ border: 'none', margin: 0, padding: 0 }}
+              >
               <div className="field">
                 <div className="label">Title</div>
                 <input
@@ -173,10 +187,11 @@ export default function IssuesPage() {
               {createError ? <div className="error">{createError}</div> : null}
 
               <div style={{ marginTop: 14 }}>
-                <button className="btn btnPrimary" type="submit">
-                  Create
+                <button className="btn btnPrimary" type="submit" disabled={isCreating}>
+                  {isCreating ? 'Creating…' : 'Create'}
                 </button>
               </div>
+              </fieldset>
             </form>
           </div>
 
@@ -185,7 +200,7 @@ export default function IssuesPage() {
               Issue List
             </div>
 
-            {query.isLoading ? <div>Loading…</div> : null}
+            {query.isLoading ? <div className="loadingHint">Loading issues…</div> : null}
             {query.isError ? (
               <div className="error">{query.error instanceof Error ? query.error.message : 'Failed to load issues'}</div>
             ) : null}
@@ -193,7 +208,7 @@ export default function IssuesPage() {
             {query.isSuccess ? (
               <>
                 {issues.length === 0 ? (
-                  <div style={{ opacity: 0.85 }}>No issues found.</div>
+                  <div className="emptyHint">No issues found yet.</div>
                 ) : null}
 
                 {issues.map((i: IssuePayload) => (

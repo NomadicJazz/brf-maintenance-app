@@ -1,26 +1,36 @@
 import { type FormEvent, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import { useToast } from '../ui/ToastContext'
 
 export default function LoginPage() {
   const { login } = useAuth()
+  const { pushToast } = useToast()
   const location = useLocation() as { state?: { from?: string } }
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const from = location.state?.from ?? '/issues'
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
+    if (isSubmitting) return
     setError(null)
+    setIsSubmitting(true)
     try {
       await login({ username, password })
+      pushToast('Logged in successfully.', 'success')
       // AuthProvider already navigates to /issues; we keep this as fallback.
       if (from !== '/issues') window.location.assign(from)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      const message = err instanceof Error ? err.message : 'Login failed'
+      setError(message)
+      pushToast(message, 'error')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -62,8 +72,8 @@ export default function LoginPage() {
             {error ? <div className="error">{error}</div> : null}
 
             <div style={{ marginTop: 16 }}>
-              <button className="btn btnPrimary" type="submit">
-                Login
+              <button className="btn btnPrimary" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Logging in…' : 'Login'}
               </button>
             </div>
           </form>

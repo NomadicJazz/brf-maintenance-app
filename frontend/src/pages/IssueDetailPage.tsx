@@ -10,6 +10,7 @@ import {
   type IssuePriority,
   type IssueStatus,
 } from '../api/issuesApi'
+import { useToast } from '../ui/ToastContext'
 
 const PRIORITIES: IssuePriority[] = ['low', 'medium', 'high']
 const STATUSES: IssueStatus[] = ['new', 'in_progress', 'resolved', 'closed']
@@ -18,6 +19,7 @@ export default function IssueDetailPage() {
   const navigate = useNavigate()
   const { issueId } = useParams()
   const { user, isAdmin } = useAuth()
+  const { pushToast } = useToast()
 
   const issueIdNum = useMemo(() => {
     const n = Number(issueId)
@@ -47,11 +49,12 @@ export default function IssueDetailPage() {
 
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     const i = issueData
     if (!i) return
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTitle(i.title ?? '')
     setDescription(i.description ?? '')
     setLocation(i.location ?? '')
@@ -62,10 +65,11 @@ export default function IssueDetailPage() {
 
   async function onSave(e: FormEvent) {
     e.preventDefault()
+    if (isSaving) return
+    if (!issueIdNum) return
     setError(null)
     setSuccess(null)
-
-    if (!issueIdNum) return
+    setIsSaving(true)
 
     const req = {
       title: title.trim(),
@@ -84,21 +88,34 @@ export default function IssueDetailPage() {
       await updateIssueApi(issueIdNum, req)
       setSuccess('Issue updated.')
       await issueQuery.refetch()
+      pushToast('Issue updated.', 'success')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Update failed')
+      const message = err instanceof Error ? err.message : 'Update failed'
+      setError(message)
+      pushToast(message, 'error')
+    } finally {
+      setIsSaving(false)
     }
   }
 
   async function onDelete() {
     if (!issueIdNum) return
+    if (isDeleting) return
+    if (!window.confirm('Delete this issue permanently?')) return
     setError(null)
     setSuccess(null)
+    setIsDeleting(true)
 
     try {
       await deleteIssueApi(issueIdNum)
+      pushToast('Issue deleted.', 'success')
       navigate('/issues')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Delete failed')
+      const message = err instanceof Error ? err.message : 'Delete failed'
+      setError(message)
+      pushToast(message, 'error')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -113,13 +130,13 @@ export default function IssueDetailPage() {
             </Link>
             {canManageIssue ? (
               <button className="btn btnDanger" onClick={onDelete} type="button">
-                Delete
+                {isDeleting ? 'Deleting…' : 'Delete'}
               </button>
             ) : null}
           </div>
         </div>
 
-        {issueQuery.isLoading ? <div>Loading…</div> : null}
+        {issueQuery.isLoading ? <div className="loadingHint">Loading issue…</div> : null}
 
         {issueQuery.isError ? (
           <div className="error">
@@ -137,6 +154,10 @@ export default function IssueDetailPage() {
               </div>
 
               <form onSubmit={onSave}>
+                <fieldset
+                  disabled={!canManageIssue || isSaving || isDeleting}
+                  style={{ border: 'none', margin: 0, padding: 0 }}
+                >
                 <div className="field">
                   <div className="label">Title</div>
                   <input value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -190,10 +211,11 @@ export default function IssueDetailPage() {
                 {success ? <div className="success">{success}</div> : null}
 
                 <div style={{ marginTop: 14 }}>
-                  <button className="btn btnPrimary" type="submit" disabled={!canManageIssue}>
-                    Save changes
+                  <button className="btn btnPrimary" type="submit" disabled={!canManageIssue || isSaving}>
+                    {isSaving ? 'Saving…' : 'Save changes'}
                   </button>
                 </div>
+                </fieldset>
               </form>
               {!canManageIssue ? (
                 <div className="error" style={{ marginTop: 10 }}>

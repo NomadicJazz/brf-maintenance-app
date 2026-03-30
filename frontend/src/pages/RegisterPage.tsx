@@ -2,9 +2,11 @@ import { type FormEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import type { RegisterRequest } from '../auth/types'
+import { useToast } from '../ui/ToastContext'
 
 export default function RegisterPage() {
   const { register } = useAuth()
+  const { pushToast } = useToast()
 
   const [form, setForm] = useState<RegisterRequest>({
     username: '',
@@ -15,11 +17,14 @@ export default function RegisterPage() {
   })
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
+    if (isSubmitting) return
     setError(null)
     setSuccess(null)
+    setIsSubmitting(true)
 
     try {
       await register({
@@ -30,9 +35,14 @@ export default function RegisterPage() {
         role: form.role,
       })
       setSuccess('Registered successfully.')
+      pushToast('Account created successfully.', 'success')
       // AuthProvider will navigate to /issues.
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed')
+      const message = err instanceof Error ? err.message : 'Registration failed'
+      setError(message)
+      pushToast(message, 'error')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -92,8 +102,8 @@ export default function RegisterPage() {
             </div>
 
             <div style={{ marginTop: 16 }}>
-              <button className="btn btnPrimary" type="submit">
-                Create account
+              <button className="btn btnPrimary" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Creating account…' : 'Create account'}
               </button>
             </div>
 
