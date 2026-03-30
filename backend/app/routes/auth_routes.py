@@ -40,11 +40,16 @@ def register():
     if User.query.filter_by(email=email).first():
         return _error("Email already exists")
 
+    role = "tenant"
+    requested_role = data.get("role")
+    if requested_role and requested_role != "tenant":
+        return _error("Self-assigned roles are not allowed", 403)
+
     user = User(
         username=username,
         email=email,
         password=password.strip(),
-        role=data.get("role", "tenant"),
+        role=role,
     )
     if data.get("apartment"):
         user.apartment = str(data["apartment"]).strip()

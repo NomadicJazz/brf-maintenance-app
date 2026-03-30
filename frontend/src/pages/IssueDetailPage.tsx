@@ -32,6 +32,11 @@ export default function IssueDetailPage() {
       return getIssueApi(issueIdNum)
     },
   })
+  const issueData = issueQuery.data as IssuePayload | undefined
+  const canManageIssue = useMemo(() => {
+    if (!issueData || !user) return false
+    return isAdmin || issueData.user_id === user.id
+  }, [issueData, isAdmin, user])
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -44,7 +49,7 @@ export default function IssueDetailPage() {
   const [success, setSuccess] = useState<string | null>(null)
 
   useEffect(() => {
-    const i = issueQuery.data as IssuePayload | undefined
+    const i = issueData
     if (!i) return
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setTitle(i.title ?? '')
@@ -53,7 +58,7 @@ export default function IssueDetailPage() {
     setPriority((i.priority as IssuePriority) ?? 'low')
     setStatus((i.status as IssueStatus) ?? 'new')
     setAssignee(i.assignee ?? '')
-  }, [issueQuery.data])
+  }, [issueData])
 
   async function onSave(e: FormEvent) {
     e.preventDefault()
@@ -106,7 +111,7 @@ export default function IssueDetailPage() {
             <Link className="btn" to="/issues">
               Back
             </Link>
-            {user ? (
+            {canManageIssue ? (
               <button className="btn btnDanger" onClick={onDelete} type="button">
                 Delete
               </button>
@@ -185,11 +190,16 @@ export default function IssueDetailPage() {
                 {success ? <div className="success">{success}</div> : null}
 
                 <div style={{ marginTop: 14 }}>
-                  <button className="btn btnPrimary" type="submit">
+                  <button className="btn btnPrimary" type="submit" disabled={!canManageIssue}>
                     Save changes
                   </button>
                 </div>
               </form>
+              {!canManageIssue ? (
+                <div className="error" style={{ marginTop: 10 }}>
+                  You do not have permission to edit this issue.
+                </div>
+              ) : null}
             </div>
 
             <div className="card">
