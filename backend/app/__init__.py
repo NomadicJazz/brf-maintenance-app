@@ -16,8 +16,10 @@ def create_app(config_filename=None):
     migrate.init_app(app, db)
     jwt.init_app(app)
 
-    # CORS: allow React frontend
-    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+    # CORS: allow local React dev server(s)
+    # React is commonly served from 127.0.0.1 (not just localhost), so allow both.
+    cors_origins = {"http://localhost:3000", "http://127.0.0.1:3000"}
+    CORS(app, resources={r"/*": {"origins": cors_origins}})
 
     from app.routes.auth_routes import auth_bp
     from app.routes.issue_routes import issues_bp
