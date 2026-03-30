@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios'
 
 const apiBaseUrl =
   (import.meta as { env: Record<string, string | undefined> }).env
-    .VITE_API_BASE_URL ?? 'http://localhost:5000'
+    .VITE_API_BASE_URL ?? 'http://127.0.0.1:5000'
 
 export const http = axios.create({
   baseURL: apiBaseUrl,
