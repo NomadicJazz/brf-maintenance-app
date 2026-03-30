@@ -20,12 +20,12 @@ export default function TopBar() {
           </span>
         ) : null}
 
-        <Link className="btn" to="/issues">
+        <Link className="btn btn-neutral border-2 border-base-300" to="/issues">
           Issues
         </Link>
 
         {user ? (
-          <button className="btn btnDanger" onClick={logout} type="button">
+          <button className="btn btn-neutral border-2 border-error text-error" onClick={logout} type="button">
             Logout
           </button>
         ) : null}

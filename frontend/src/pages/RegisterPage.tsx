@@ -49,11 +49,11 @@ export default function RegisterPage() {
   return (
     <div className="appShell">
       <div className="container">
-        <div className="card">
-          <div className="row" style={{ marginBottom: 14 }}>
+        <div className="card card-bordered border-2 border-base-300 bg-base-100 shadow-xl">
+          <div className="row border-b-2 border-base-300 pb-3" style={{ marginBottom: 14 }}>
             <div className="brand">Register</div>
             <div className="navActions">
-              <Link className="btn" to="/login">
+              <Link className="btn btn-neutral border-2 border-base-300" to="/login">
                 Back to login
               </Link>
             </div>
@@ -61,8 +61,9 @@ export default function RegisterPage() {
 
           <form onSubmit={onSubmit}>
             <div className="field">
-              <div className="label">Username</div>
+              <div className="label text-base-content">Username</div>
               <input
+                className="input input-bordered border-2 border-base-300 bg-base-200 text-base-content w-full"
                 value={form.username}
                 onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
                 autoComplete="username"
@@ -71,8 +72,9 @@ export default function RegisterPage() {
             </div>
 
             <div className="field">
-              <div className="label">Email</div>
+              <div className="label text-base-content">Email</div>
               <input
+                className="input input-bordered border-2 border-base-300 bg-base-200 text-base-content w-full"
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
@@ -82,8 +84,9 @@ export default function RegisterPage() {
             </div>
 
             <div className="field">
-              <div className="label">Apartment (optional)</div>
+              <div className="label text-base-content">Apartment (optional)</div>
               <input
+                className="input input-bordered border-2 border-base-300 bg-base-200 text-base-content w-full"
                 value={form.apartment ?? ''}
                 onChange={(e) => setForm((f) => ({ ...f, apartment: e.target.value }))}
                 autoComplete="off"
@@ -91,8 +94,9 @@ export default function RegisterPage() {
             </div>
 
             <div className="field">
-              <div className="label">Password</div>
+              <div className="label text-base-content">Password</div>
               <input
+                className="input input-bordered border-2 border-base-300 bg-base-200 text-base-content w-full"
                 type="password"
                 value={form.password}
                 onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
@@ -102,7 +106,7 @@ export default function RegisterPage() {
             </div>
 
             <div style={{ marginTop: 16 }}>
-              <button className="btn btnPrimary" type="submit" disabled={isSubmitting}>
+              <button className="btn btn-primary text-primary-content border-2 border-primary w-full sm:w-auto" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? 'Creating account…' : 'Create account'}
               </button>
             </div>

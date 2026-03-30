@@ -93,7 +93,7 @@ export default function IssuesPage() {
       <div className="container">
         <TopBar />
 
-        <div className="row" style={{ marginBottom: 14, marginTop: 10 }}>
+        <div className="row border-b-2 border-base-300 pb-3" style={{ marginBottom: 14, marginTop: 10 }}>
           <div>
             <div className="brand" style={{ fontSize: 18 }}>
               {listTitle}
@@ -114,7 +114,7 @@ export default function IssuesPage() {
                 <option value="resolved">resolved</option>
                 <option value="closed">closed</option>
               </select>
-              <button className="btn" onClick={() => setPage(1)} type="button">
+                <button className="btn btn-neutral border-2 border-base-300" onClick={() => setPage(1)} type="button">
                 Apply
               </button>
             </div>
@@ -122,7 +122,7 @@ export default function IssuesPage() {
         </div>
 
         <div className="grid2" style={{ marginBottom: 16 }}>
-          <div className="card">
+          <div className="card card-bordered border-2 border-base-300">
             <div className="brand" style={{ fontSize: 16, marginBottom: 10 }}>
               Create Issue
             </div>
@@ -133,7 +133,7 @@ export default function IssuesPage() {
                 style={{ border: 'none', margin: 0, padding: 0 }}
               >
               <div className="field">
-                <div className="label">Title</div>
+                <div className="label text-base-content">Title</div>
                 <input
                   value={createForm.title}
                   onChange={(e) => setCreateForm((f) => ({ ...f, title: e.target.value }))}
@@ -142,7 +142,7 @@ export default function IssuesPage() {
               </div>
 
               <div className="field">
-                <div className="label">Description (optional)</div>
+                <div className="label text-base-content">Description (optional)</div>
                 <textarea
                   value={createForm.description ?? ''}
                   onChange={(e) => setCreateForm((f) => ({ ...f, description: e.target.value }))}
@@ -150,7 +150,7 @@ export default function IssuesPage() {
               </div>
 
               <div className="field">
-                <div className="label">Location (optional)</div>
+                <div className="label text-base-content">Location (optional)</div>
                 <input
                   value={createForm.location ?? ''}
                   onChange={(e) => setCreateForm((f) => ({ ...f, location: e.target.value }))}
@@ -158,7 +158,7 @@ export default function IssuesPage() {
               </div>
 
               <div className="field">
-                <div className="label">Priority</div>
+                <div className="label text-base-content">Priority</div>
                 <select
                   value={createForm.priority}
                   onChange={(e) => setCreateForm((f) => ({ ...f, priority: e.target.value as IssuePriority }))}
@@ -172,7 +172,7 @@ export default function IssuesPage() {
               </div>
 
               <div className="field">
-                <div className="label">Photo URL (optional)</div>
+                <div className="label text-base-content">Photo URL (optional)</div>
                 <input
                   value={createForm.photo_url ?? ''}
                   onChange={(e) =>
@@ -187,7 +187,7 @@ export default function IssuesPage() {
               {createError ? <div className="error">{createError}</div> : null}
 
               <div style={{ marginTop: 14 }}>
-                <button className="btn btnPrimary" type="submit" disabled={isCreating}>
+                <button className="btn btn-primary border-2 border-primary" type="submit" disabled={isCreating}>
                   {isCreating ? 'Creating…' : 'Create'}
                 </button>
               </div>
@@ -195,7 +195,7 @@ export default function IssuesPage() {
             </form>
           </div>
 
-          <div className="card">
+          <div className="card card-bordered border-2 border-base-300">
             <div className="brand" style={{ fontSize: 16, marginBottom: 10 }}>
               Issue List
             </div>
@@ -216,7 +216,7 @@ export default function IssuesPage() {
                     key={i.id}
                     style={{
                       padding: '12px 0',
-                      borderBottom: '1px solid var(--border)',
+                      borderBottom: '1px solid var(--border-color)',
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
@@ -235,7 +235,7 @@ export default function IssuesPage() {
 
                 <div className="row" style={{ marginTop: 14 }}>
                   <button
-                    className="btn"
+                    className="btn btn-neutral border-2 border-base-300"
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page <= 1}
                     type="button"
@@ -246,7 +246,7 @@ export default function IssuesPage() {
                     Page {page} of {totalPages}
                   </div>
                   <button
-                    className="btn"
+                    className="btn btn-neutral border-2 border-base-300"
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page >= totalPages}
                     type="button"

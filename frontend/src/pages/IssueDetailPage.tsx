@@ -122,14 +122,14 @@ export default function IssueDetailPage() {
   return (
     <div className="appShell">
       <div className="container">
-        <div className="row" style={{ marginBottom: 14 }}>
+        <div className="row border-b-2 border-base-300 pb-3" style={{ marginBottom: 14 }}>
           <div className="brand">Issue</div>
           <div className="navActions">
-            <Link className="btn" to="/issues">
+            <Link className="btn btn-neutral border-2 border-base-300" to="/issues">
               Back
             </Link>
             {canManageIssue ? (
-              <button className="btn btnDanger" onClick={onDelete} type="button">
+              <button className="btn btn-neutral border-2 border-error text-error" onClick={onDelete} type="button">
                 {isDeleting ? 'Deleting…' : 'Delete'}
               </button>
             ) : null}
@@ -148,7 +148,7 @@ export default function IssueDetailPage() {
 
         {issueQuery.data ? (
           <div className="grid2">
-            <div className="card">
+            <div className="card card-bordered border-2 border-base-300">
               <div className="brand" style={{ fontSize: 16, marginBottom: 10 }}>
                 Edit Issue
               </div>
@@ -159,12 +159,12 @@ export default function IssueDetailPage() {
                   style={{ border: 'none', margin: 0, padding: 0 }}
                 >
                 <div className="field">
-                  <div className="label">Title</div>
+                  <div className="label text-base-content">Title</div>
                   <input value={title} onChange={(e) => setTitle(e.target.value)} required />
                 </div>
 
                 <div className="field">
-                  <div className="label">Description</div>
+                  <div className="label text-base-content">Description</div>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -172,12 +172,12 @@ export default function IssueDetailPage() {
                 </div>
 
                 <div className="field">
-                  <div className="label">Location</div>
+                  <div className="label text-base-content">Location</div>
                   <input value={location} onChange={(e) => setLocation(e.target.value)} />
                 </div>
 
                 <div className="field">
-                  <div className="label">Priority</div>
+                  <div className="label text-base-content">Priority</div>
                   <select value={priority} onChange={(e) => setPriority(e.target.value as IssuePriority)}>
                     {PRIORITIES.map((p) => (
                       <option key={p} value={p}>
@@ -190,7 +190,7 @@ export default function IssueDetailPage() {
                 {isAdmin ? (
                   <>
                     <div className="field">
-                      <div className="label">Status</div>
+                      <div className="label text-base-content">Status</div>
                       <select value={status} onChange={(e) => setStatus(e.target.value as IssueStatus)}>
                         {STATUSES.map((s) => (
                           <option key={s} value={s}>
@@ -201,7 +201,7 @@ export default function IssueDetailPage() {
                     </div>
 
                     <div className="field">
-                      <div className="label">Assignee</div>
+                      <div className="label text-base-content">Assignee</div>
                       <input value={assignee} onChange={(e) => setAssignee(e.target.value)} />
                     </div>
                   </>
@@ -211,7 +211,7 @@ export default function IssueDetailPage() {
                 {success ? <div className="success">{success}</div> : null}
 
                 <div style={{ marginTop: 14 }}>
-                  <button className="btn btnPrimary" type="submit" disabled={!canManageIssue || isSaving}>
+                  <button className="btn btn-primary border-2 border-primary" type="submit" disabled={!canManageIssue || isSaving}>
                     {isSaving ? 'Saving…' : 'Save changes'}
                   </button>
                 </div>
@@ -224,7 +224,7 @@ export default function IssueDetailPage() {
               ) : null}
             </div>
 
-            <div className="card">
+            <div className="card card-bordered border-2 border-base-300">
               <div className="brand" style={{ fontSize: 16, marginBottom: 10 }}>
                 Details
               </div>

@@ -4,6 +4,7 @@ export type ToastKind = 'success' | 'error' | 'info'
 
 export type ToastContextValue = {
   pushToast: (message: string, kind?: ToastKind) => void
+  showToast: (message: string, kind?: ToastKind) => void
 }
 
 export const ToastContext = createContext<ToastContextValue | null>(null)
