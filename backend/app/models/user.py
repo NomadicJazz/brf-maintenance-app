@@ -32,7 +32,11 @@ class User(db.Model):
 
     def check_password(self, password):
         """Verifies a password against the stored hash."""
-        return check_password_hash(self.password, password)
+        try:
+            return check_password_hash(self.password, password)
+        except (ValueError, TypeError):
+            # Corrupt/legacy hashes should fail closed, not crash login.
+            return False
 
     def is_admin(self):
         return self.role == "admin"
